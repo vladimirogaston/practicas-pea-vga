@@ -1,12 +1,13 @@
 package ar.vga.com.domain;
 
-import lombok.NoArgsConstructor;
-
-@NoArgsConstructor
 public class Person extends DomainObject {
     private String lastName;
     private String firstName;
     private Integer numberOfDependants;
+
+    public Person() {
+        super(null);
+    }
 
     public Person(Long id) {
         super(id);

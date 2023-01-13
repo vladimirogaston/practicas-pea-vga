@@ -16,7 +16,7 @@ public abstract class AbstractMapper {
     protected Map<Long, DomainObject> loadedMap = new HashMap<Long, DomainObject>();
 
     public AbstractMapper(){
-        this.connection = null;
+        this.connection = H2.makeConnection();
     }
 
     protected DomainObject abstractFind(Long id) {

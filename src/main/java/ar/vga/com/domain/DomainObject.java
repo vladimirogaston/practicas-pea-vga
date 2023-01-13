@@ -1,14 +1,19 @@
 package ar.vga.com.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class DomainObject {
     private Long id;
+
+    public DomainObject(Long id) {
+        this.id = id;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     protected void markNew() {
         UnitOfWork.getCurrent().registerNew(this);
@@ -22,7 +27,7 @@ public class DomainObject {
         UnitOfWork.getCurrent().registerDirty(this);
     }
 
-    protected void markRemovd() {
+    protected void markRemoved() {
         UnitOfWork.getCurrent().registerRemoved(this);
     }
 }

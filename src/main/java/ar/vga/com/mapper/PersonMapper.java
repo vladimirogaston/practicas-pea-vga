@@ -11,10 +11,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class PersonMapper extends AbstractMapper implements PersonFinder {
-    public static final String COLUMNS = "id, lastName, firstName, numberOfDependants";
+    public static final String COLUMNS = "id, last_name, first_name, number_of_dependants";
     private static final String FIND_BY_ID_STATEMENT = "SELECT " + COLUMNS + " FROM persons P WHERE P.id = ?";
-    private static final String INSERT_STATEMENT = "INSERT INTO persons (id, lastName, firstName, numberOfDependants) VALUES (?,?,?,?)";
-    private static final String UPDATE_STATEMENT = "UPDATE persons SET lastName = ?, firstName = ?, numberOfDependants = ? WHERE id = ?";
+    private static final String INSERT_STATEMENT = "INSERT INTO persons (id, last_name, first_name, number_of_dependants) VALUES (?,?,?,?)";
+    private static final String UPDATE_STATEMENT = "UPDATE persons SET last_name = ?, first_name = ?, number_of_dependants = ? WHERE id = ?";
     private static final String DELETE_STATEMENT = "DELETE persons P WHERE P.id = ?";
 
     public PersonMapper(){
@@ -34,7 +34,7 @@ public class PersonMapper extends AbstractMapper implements PersonFinder {
     public List<Person> findByLastName(final String lastname) {
         StatementSource statementSource = new StatementSource() {
             public String getSql() {
-                return "SELECT " + COLUMNS + " FROM persons P WHERE p.lastName = ?";
+                return "SELECT " + COLUMNS + " FROM persons P WHERE p.last_name = ?";
             }
 
             public Object[] getParameters() {
