@@ -1,3 +1,4 @@
+DROP TABLE persons IF EXISTS;
 CREATE TABLE persons(
     id BIGINT NOT NULL,
     last_name VARCHAR(15),

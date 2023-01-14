@@ -18,16 +18,16 @@ public class UnitOfWork {
         removedObjects = new LinkedList<>();
     }
 
-    public static void setCurrent() {
-        setCurrent(new UnitOfWork());
-    }
-
     public static UnitOfWork getCurrent() {
         return (UnitOfWork) current.get();
     }
 
-    public static void setCurrent(UnitOfWork uow) {
-        current.set(uow);
+    public static void newCurrent() {
+        current.set(new UnitOfWork());
+    }
+
+    public static void clean() {
+        current.set(null);
     }
 
     public void registerNew(DomainObject domainObject) {
@@ -47,14 +47,10 @@ public class UnitOfWork {
         if (removedObjects.contains(domainObject)) {
             throw new ApplicationException("Removed object");
         }
-        if (DomainObjectsRegistry
-                .getDomainObjectsRegistry(domainObject.getClass())
-                .get(domainObject.getId()) != null) {
-            DomainObjectsRegistry
-                    .getDomainObjectsRegistry(domainObject.getClass())
-                    .replace(domainObject.getId(), domainObject);
+        if(this.newObjects.contains(domainObject)) {
+            this.newObjects.remove(domainObject);
         }
-        if (!dirtyObjects.contains(domainObject) && newObjects.contains(domainObject)) {
+        if (!dirtyObjects.contains(domainObject)) {
             this.dirtyObjects.add(domainObject);
         }
     }
@@ -63,25 +59,9 @@ public class UnitOfWork {
         if (newObjects.remove(domainObject)) {
             return;
         }
-        if (DomainObjectsRegistry
-                .getDomainObjectsRegistry(domainObject.getClass())
-                .get(domainObject.getId()) != null) {
-            DomainObjectsRegistry
-                    .getDomainObjectsRegistry(domainObject.getClass())
-                    .remove(domainObject);
-        }
         dirtyObjects.remove(domainObject);
-        this.removedObjects.add(domainObject);
         if (!removedObjects.contains(domainObject)) {
             removedObjects.add(domainObject);
-        }
-    }
-
-    public void registerClean(DomainObject domainObject) {
-        if (DomainObjectsRegistry
-                .getDomainObjectsRegistry(domainObject.getClass()).get(domainObject.getId()) == null) {
-            DomainObjectsRegistry
-                    .getDomainObjectsRegistry(domainObject.getClass()).put(domainObject.getId(), domainObject);
         }
     }
 
@@ -93,19 +73,19 @@ public class UnitOfWork {
 
     private void insertNew() {
         newObjects.stream().forEach(domainObject -> {
-            MapperRegistry.get(domainObject.getClass()).insert(domainObject);
+            MapperRegistry.getInstance().getMapper(domainObject.getClass()).insert(domainObject);
         });
     }
 
     private void udpateDirty() {
-        newObjects.stream().forEach(domainObject -> {
-            MapperRegistry.get(domainObject.getClass()).update(domainObject);
+        dirtyObjects.stream().forEach(domainObject -> {
+            MapperRegistry.getInstance().getMapper(domainObject.getClass()).update(domainObject);
         });
     }
 
     private void deleteRemoved() {
-        newObjects.stream().forEach(domainObject -> {
-            MapperRegistry.get(domainObject.getClass()).delete(domainObject.getId());
+        removedObjects.stream().forEach(domainObject -> {
+            MapperRegistry.getInstance().getMapper(domainObject.getClass()).delete(domainObject.getId());
         });
     }
 }

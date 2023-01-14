@@ -52,11 +52,7 @@ public class PersonMapper extends AbstractMapper implements PersonFinder {
         String lastName = resultSet.getString(2);
         String firstName = resultSet.getString(3);
         Integer numberOfDependants = resultSet.getInt(4);
-        Person person = new Person();
-        person.setId(id);
-        person.setFirstName(firstName);
-        person.setLastName(lastName);
-        person.setNumberOfDependants(numberOfDependants);
+        Person person = new Person(id, lastName, firstName, numberOfDependants);
         return person;
     }
 
@@ -70,20 +66,22 @@ public class PersonMapper extends AbstractMapper implements PersonFinder {
             preparedStatement.setObject(3, person.getFirstName());
             preparedStatement.setObject(4, person.getNumberOfDependants());
             int res = preparedStatement.executeUpdate();
+            System.out.println("----- RESULT OF INSERT ----- " + res);
         } catch (SQLException exception) {
             throw new ApplicationException(exception.getMessage());
         }
     }
 
     public void update(DomainObject domainObject) {
-        Person person = (Person) domainObject;
         try {
+            Person person = (Person) domainObject;
             PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_STATEMENT);
             preparedStatement.setObject(1, person.getLastName());
             preparedStatement.setObject(2, person.getFirstName());
             preparedStatement.setObject(3, person.getNumberOfDependants());
-            preparedStatement.setObject(2, person.getId());
+            preparedStatement.setObject(4, person.getId());
             int res = preparedStatement.executeUpdate();
+            System.out.println("----- RESULT OF UPDATE ----- " + res);
         } catch (SQLException exception) {
             throw new ApplicationException(exception.getMessage());
         }

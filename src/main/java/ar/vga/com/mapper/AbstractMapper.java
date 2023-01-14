@@ -12,11 +12,10 @@ import java.util.List;
 import java.util.Map;
 
 public abstract class AbstractMapper {
-    protected Connection connection;
+    protected static Connection connection = H2.makeConnection();
     protected Map<Long, DomainObject> loadedMap = new HashMap<Long, DomainObject>();
 
     public AbstractMapper(){
-        this.connection = H2.makeConnection();
     }
 
     protected DomainObject abstractFind(Long id) {
@@ -29,16 +28,11 @@ public abstract class AbstractMapper {
             PreparedStatement findStatement = connection.prepareStatement(SQL_FIND);
             findStatement.setLong(1, id);
             ResultSet resultSet = findStatement.executeQuery();
-            resultSet.next();
-            domainObject = load(resultSet);
+            if(resultSet.next()) {
+                domainObject = load(resultSet);
+            }
         } catch (SQLException sqlException) {
             throw new ApplicationException(sqlException.getMessage());
-        } finally {
-            try {
-                connection.close();
-            } catch (SQLException e) {
-                throw new ApplicationException(e.getMessage());
-            }
         }
         return domainObject;
     }
@@ -60,12 +54,6 @@ public abstract class AbstractMapper {
             return domainObjects;
         } catch (SQLException sqlException) {
             throw new ApplicationException(sqlException.getMessage());
-        } finally {
-            try {
-                connection.close();
-            } catch (SQLException e) {
-                throw new ApplicationException(e.getMessage());
-            }
         }
     }
 

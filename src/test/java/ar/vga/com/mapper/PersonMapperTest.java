@@ -1,6 +1,8 @@
 package ar.vga.com.mapper;
 
 import ar.vga.com.domain.Person;
+import ar.vga.com.domain.PersonFinder;
+import ar.vga.com.domain.UnitOfWork;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -8,14 +10,27 @@ import static org.junit.jupiter.api.Assertions.*;
 class PersonMapperTest {
 
     @Test
-    void insert() {
-        Person p = new Person();
-        p.setId(1L);
-        p.setFirstName("p1");
-        p.setLastName("p2");
-        p.setNumberOfDependants(3);
-        PersonMapper mapper = new PersonMapper();
-        mapper.insert(p);
-        assertNotNull(mapper.findByLastName("p2"));
+    void insertWorks() {
+        UnitOfWork.newCurrent();
+        Person p = Person.create("lstName","frstName", 3);
+        UnitOfWork.getCurrent().commit();
+        PersonFinder personFinder = (PersonFinder) MapperRegistry.getInstance().getMapper(Person.class);
+        assertNotNull(personFinder);
+        assertNotNull(personFinder.findById(p.getId()));
+        UnitOfWork.clean();
+    }
+
+    @Test
+    void updateWorks() {
+        UnitOfWork.newCurrent();
+        Person p = Person.create("lstName","frstName", 3);
+        UnitOfWork.getCurrent().commit();
+        UnitOfWork.clean();
+
+        UnitOfWork.newCurrent();
+        Person p2 = ((PersonFinder) MapperRegistry.getInstance().getMapper(Person.class)).findById(p.getId());
+        p2.setLastName("pepito");
+        UnitOfWork.getCurrent().commit();
+        UnitOfWork.clean();
     }
 }

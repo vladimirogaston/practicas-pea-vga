@@ -9,9 +9,18 @@ public class Person extends DomainObject {
         super(null);
     }
 
-    public Person(Long id) {
+    public Person(Long id,String lastName, String firstName, Integer numberOfDependants) {
         super(id);
+        this.lastName = lastName;
+        this.firstName = firstName;
+        this.numberOfDependants = numberOfDependants;
         markNew();
+    }
+
+    public static Person create(String lastName, String firstName, Integer numberOfDependants) {
+        Long id = IDGenerator.nextID();
+        Person person = new Person(id, lastName, firstName, numberOfDependants);
+        return person;
     }
 
     public String getLastName() {
